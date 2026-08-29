@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patrol Officer · NER Logistics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <link rel="stylesheet" href="/css/map.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo" style="background: var(--accent-amber); color: white;">👷</div>
+          <div>
+            <div class="sidebar-title">Patrol Officer</div>
+            <div class="sidebar-subtitle">NER Logistics Intelligence</div>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <div class="nav-section-label">Field Operations</div>
+            <button class="nav-item active" data-view="view-zone" data-title="My Zone Map" data-subtitle="Patrol area &amp; disruption pins">
+              <span class="nav-icon">🗺</span> My Zone
+            </button>
+            <button class="nav-item" data-view="view-report" data-title="Report Disruption" data-subtitle="Submit a new disruption report">
+              <span class="nav-icon">📝</span> Report
+            </button>
+            <button class="nav-item" data-view="view-incidents" data-title="Assigned Incidents" data-subtitle="Disruptions you are monitoring">
+              <span class="nav-icon">📋</span> Incidents
+            </button>
+            <button class="nav-item" data-view="view-nearby" data-title="Nearby Vehicles" data-subtitle="Supply vehicles near your zone">
+              <span class="nav-icon">🚛</span> Nearby Vehicles
+            </button>
+            <button class="nav-item" data-view="view-inbox" data-title="Instructions Inbox" data-subtitle="Messages from control">
+              <span class="nav-icon">📬</span> Inbox
+              <span class="nav-badge" id="patrol-inbox-badge">0</span>
+            </button>
+          </div>
+        </nav>
+        <div class="sidebar-footer">
+          <div style="padding:12px;border-top:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">My Status</div>
+            <div class="radio-group">
+              <div class="radio-chip selected" data-status="on-duty">On Duty</div>
+              <div class="radio-chip" data-status="off-duty">Off Duty</div>
+              <div class="radio-chip" data-status="en-route">En Route</div>
+            </div>
+          </div>
+          <button class="nav-item" id="logout-btn" style="margin-top:8px">
+            <span class="nav-icon">⏻</span> Logout
+          </button>
+        </div>
+      </aside>
+      <div class="mobile-overlay" id="mobile-overlay"></div>
+
+      <div class="main-area">
+        <header class="topbar">
+          <button class="icon-btn" id="menu-toggle" style="display:none">☰</button>
+          <div>
+            <div class="topbar-title" id="topbar-title">My Zone Map</div>
+            <div class="topbar-subtitle" id="topbar-subtitle">Patrol area &amp; disruption pins</div>
+          </div>
+          <div class="topbar-spacer"></div>
+          <div class="topbar-actions">
+            <button class="icon-btn" id="theme-toggle">☾</button>
+            <div class="user-chip">
+              <div class="user-avatar" style="background: var(--accent-amber)">K</div>
+              <div>
+                <div class="user-name" id="user-name">Officer</div>
+                <div class="user-role" id="user-zone">Zone</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="content">
+          <!-- Zone Map -->
+          <section class="view active" id="view-zone">
+            <div class="kpi-grid">
+              <div class="kpi-card" style="--kpi-color:var(--accent-amber);--kpi-bg:rgba(245,158,11,0.12)">
+                <div class="kpi-header">
+                  <div class="kpi-icon">📋</div>
+                </div>
+                <div class="kpi-value" id="zone-assigned-count">0</div>
+                <div class="kpi-label">Assigned Incidents</div>
+              </div>
+              <div class="kpi-card" style="--kpi-color:var(--accent-red);--kpi-bg:rgba(239,68,68,0.12)">
+                <div class="kpi-header">
+                  <div class="kpi-icon">⚠</div>
+                </div>
+                <div class="kpi-value" id="zone-active-count">0</div>
+                <div class="kpi-label">Active Disruptions</div>
+              </div>
+              <div class="kpi-card" style="--kpi-color:var(--accent-green);--kpi-bg:rgba(16,185,129,0.12)">
+                <div class="kpi-header">
+                  <div class="kpi-icon">🚛</div>
+                </div>
+                <div class="kpi-value" id="zone-vehicles-count">0</div>
+                <div class="kpi-label">Nearby Vehicles</div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">🗺 My Assigned Zone</span>
+                <span class="badge badge-info" id="zone-label">Zone</span>
+              </div>
+              <div class="panel-body no-pad">
+                <div class="map-container" style="height:500px" id="zone-map"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Report Disruption -->
+          <section class="view" id="view-report">
+            <div class="panel" style="max-width:640px;margin:0 auto">
+              <div class="panel-header"><span class="panel-title">📝 Report Disruption</span></div>
+              <div class="panel-body">
+                <div class="report-form">
+                  <div class="form-group">
+                    <label class="form-label">Disruption Type</label>
+                    <div class="radio-group">
+                      <div class="radio-chip selected" data-dtype="Flood">🌊 Flood</div>
+                      <div class="radio-chip" data-dtype="Landslide">⛰ Landslide</div>
+                      <div class="radio-chip" data-dtype="Road Blockage">🚧 Blockage</div>
+                      <div class="radio-chip" data-dtype="Bridge Damage">🏗 Bridge</div>
+                      <div class="radio-chip" data-dtype="Other">⚠ Other</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Severity</label>
+                    <div class="radio-group">
+                      <div class="radio-chip" data-severity="low">🟢 Low</div>
+                      <div class="radio-chip selected moderate" data-severity="moderate">🟡 Moderate</div>
+                      <div class="radio-chip" data-severity="critical">🔴 Critical</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" id="report-location" placeholder="Auto-detected from your position" />
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:4px">📍 Auto-filled from your zone. Edit if needed.</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="report-description" placeholder="Describe the disruption in detail..."></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Photo (simulated)</label>
+                    <div class="upload-zone" id="upload-zone">
+                      <div class="upload-icon">📷</div>
+                      <div>Tap to upload a photo of the disruption</div>
+                    </div>
+                    <div class="upload-preview" id="upload-preview" style="display:none"></div>
+                  </div>
+                  <button class="btn btn-primary" id="submit-report-btn" style="background:var(--accent-amber)">📋 Submit Report</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Assigned Incidents -->
+          <section class="view" id="view-incidents">
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">📋 Assigned Incidents</span>
+                <span class="badge badge-neutral" id="incidents-count">0 assigned</span>
+              </div>
+              <div class="panel-body flush" id="assigned-incidents"></div>
+            </div>
+          </section>
+
+          <!-- Nearby Vehicles -->
+          <section class="view" id="view-nearby">
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">🚛 Nearby Supply Vehicles</span>
+              </div>
+              <div class="panel-body no-pad">
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr><th>Vehicle</th><th>Driver</th><th>Cargo</th><th>Status</th><th>Destination</th></tr>
+                    </thead>
+                    <tbody id="nearby-vehicles-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Instructions Inbox -->
+          <section class="view" id="view-inbox">
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">📬 Instructions from Control</span>
+              </div>
+              <div class="panel-body flush" id="patrol-inbox"></div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="/js/patrol-dashboard.js"></script>
+  </body>
+</html>

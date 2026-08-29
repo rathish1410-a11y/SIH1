@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Portal · NER Logistics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <link rel="stylesheet" href="/css/map.css" />
+  </head>
+  <body>
+    <div class="app-shell" id="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo" style="background: var(--accent-red); color: white;">🛡</div>
+          <div>
+            <div class="sidebar-title">Admin Portal</div>
+            <div class="sidebar-subtitle">NER Logistics Intelligence</div>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <div class="nav-section-label">Overview</div>
+            <button class="nav-item active" data-view="view-overview" data-title="Dashboard Overview" data-subtitle="System-wide KPIs and live map">
+              <span class="nav-icon">📊</span> Overview
+            </button>
+            <button class="nav-item" data-view="view-map" data-title="Full NER Map" data-subtitle="All markers, routes, and zones">
+              <span class="nav-icon">🗺</span> Full Map
+            </button>
+          </div>
+          <div class="nav-section">
+            <div class="nav-section-label">Management</div>
+            <button class="nav-item" data-view="view-users" data-title="User Management" data-subtitle="Manage all platform users">
+              <span class="nav-icon">👥</span> Users
+            </button>
+            <button class="nav-item" data-view="view-disruptions" data-title="Disruption Management" data-subtitle="Approve or reject patrol reports">
+              <span class="nav-icon">⚠</span> Disruptions
+              <span class="nav-badge" id="admin-disruption-badge">0</span>
+            </button>
+            <button class="nav-item" data-view="view-fleet" data-title="Vehicle Fleet Manager" data-subtitle="Manage vehicles and routes">
+              <span class="nav-icon">🚛</span> Fleet
+            </button>
+          </div>
+          <div class="nav-section">
+            <div class="nav-section-label">System</div>
+            <button class="nav-item" data-view="view-alerts" data-title="Alert Broadcasting" data-subtitle="Send alerts to all roles">
+              <span class="nav-icon">📢</span> Broadcast
+            </button>
+            <button class="nav-item" data-view="view-analytics" data-title="Analytics Dashboard" data-subtitle="Charts and trends">
+              <span class="nav-icon">📈</span> Analytics
+            </button>
+            <button class="nav-item" data-view="view-logs" data-title="System Logs" data-subtitle="Full audit trail">
+              <span class="nav-icon">📋</span> Logs
+            </button>
+            <button class="nav-item" data-view="view-ai" data-title="AI Detection Control" data-subtitle="Toggle AI monitoring">
+              <span class="nav-icon">🤖</span> AI Control
+            </button>
+          </div>
+        </nav>
+        <div class="sidebar-footer">
+          <button class="nav-item" id="logout-btn">
+            <span class="nav-icon">⏻</span> Logout
+          </button>
+        </div>
+      </aside>
+      <div class="mobile-overlay" id="mobile-overlay"></div>
+
+      <div class="main-area">
+        <header class="topbar">
+          <button class="icon-btn" id="menu-toggle" style="display:none">☰</button>
+          <div>
+            <div class="topbar-title" id="topbar-title">Dashboard Overview</div>
+            <div class="topbar-subtitle" id="topbar-subtitle">System-wide KPIs and live map</div>
+          </div>
+          <div class="topbar-spacer"></div>
+          <div class="topbar-actions">
+            <button class="icon-btn" id="theme-toggle">☾</button>
+            <div class="user-chip">
+              <div class="user-avatar" style="background: var(--accent-red)">A</div>
+              <div>
+                <div class="user-name" id="user-name">Admin</div>
+                <div class="user-role">System Administrator</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="content">
+          <!-- Overview -->
+          <section class="view active" id="view-overview">
+            <div class="kpi-grid" id="admin-kpis"></div>
+            <div class="dash-grid cols-3">
+              <div class="panel">
+                <div class="panel-header">
+                  <span class="panel-title">🗺 Live NER Map</span>
+                  <button class="btn-sm btn-ghost" onclick="document.querySelector('[data-view=view-map]').click()">Full Map →</button>
+                </div>
+                <div class="panel-body no-pad">
+                  <div class="map-container auto-height" id="overview-map"></div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div class="panel">
+                  <div class="panel-header"><span class="panel-title">⚠ Active Disruptions</span></div>
+                  <div class="panel-body flush" id="admin-active-disruptions"></div>
+                </div>
+                <div class="panel">
+                  <div class="panel-header"><span class="panel-title">🔔 Recent Alerts</span></div>
+                  <div class="panel-body flush" id="admin-recent-alerts"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Full Map -->
+          <section class="view" id="view-map">
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">🗺 Full NER Operational Map</span>
+                <span class="badge badge-info">All Markers Visible</span>
+              </div>
+              <div class="panel-body no-pad">
+                <div class="map-container" style="height:600px" id="full-map"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- User Management -->
+          <section class="view" id="view-users">
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">👥 User Management</span>
+                <button class="btn-sm btn-blue" id="add-user-btn">+ Add User</button>
+              </div>
+              <div class="panel-body no-pad">
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr><th>ID</th><th>Name</th><th>Role</th><th>Zone/Route</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="users-table-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Disruption Management -->
+          <section class="view" id="view-disruptions">
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">⚠ Disruption Management</span>
+                <span class="badge badge-neutral" id="disruption-count">0 total</span>
+              </div>
+              <div class="panel-body no-pad">
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr><th>ID</th><th>Type</th><th>Location</th><th>Severity</th><th>Status</th><th>Verified</th><th>Reported By</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="disruptions-table-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Fleet Manager -->
+          <section class="view" id="view-fleet">
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">🚛 Vehicle Fleet Manager</span>
+                <button class="btn-sm btn-blue" id="add-vehicle-btn">+ Add Vehicle</button>
+              </div>
+              <div class="panel-body no-pad">
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr><th>Vehicle ID</th><th>Driver</th><th>Cargo</th><th>Priority</th><th>Route</th><th>Status</th><th>ETA</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="fleet-table-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Alert Broadcasting -->
+          <section class="view" id="view-alerts">
+            <div class="dash-grid cols-2">
+              <div class="panel">
+                <div class="panel-header"><span class="panel-title">📢 Broadcast Alert</span></div>
+                <div class="panel-body">
+                  <div class="report-form">
+                    <div class="form-group">
+                      <label class="form-label">Alert Title</label>
+                      <input type="text" class="form-input" id="broadcast-title" placeholder="Emergency alert title" />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Message</label>
+                      <textarea class="form-input" id="broadcast-message" placeholder="Alert details..."></textarea>
+                    </div>
+                    <div class="form-grid-2">
+                      <div class="form-group">
+                        <label class="form-label">Severity</label>
+                        <select class="select-input" id="broadcast-severity">
+                          <option value="urgent">🔴 Urgent</option>
+                          <option value="advisory">🟡 Advisory</option>
+                          <option value="info">🟢 Info</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Target Role</label>
+                        <select class="select-input" id="broadcast-target">
+                          <option value="all">All Roles</option>
+                          <option value="police">Police Control</option>
+                          <option value="driver">Drivers</option>
+                          <option value="patrol">Patrol Officers</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button class="btn btn-primary" id="send-broadcast-btn">📡 Send Broadcast</button>
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header"><span class="panel-title">📜 Alert History</span></div>
+                <div class="panel-body flush" id="broadcast-history"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Analytics -->
+          <section class="view" id="view-analytics">
+            <div class="dash-grid cols-2">
+              <div class="panel">
+                <div class="panel-header"><span class="panel-title">📊 Disruptions by Type</span></div>
+                <div class="panel-body">
+                  <div class="chart-bar-container" id="chart-by-type"></div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header"><span class="panel-title">📊 Disruptions by Severity</span></div>
+                <div class="panel-body">
+                  <div class="chart-bar-container" id="chart-by-severity"></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><span class="panel-title">🚛 Fleet Status Distribution</span></div>
+              <div class="panel-body">
+                <div class="chart-bar-container" id="chart-fleet-status"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- System Logs -->
+          <section class="view" id="view-logs">
+            <div class="panel">
+              <div class="panel-header"><span class="panel-title">📋 System Audit Logs</span></div>
+              <div class="panel-body no-pad">
+                <div class="log-list" id="admin-log-list"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- AI Control -->
+          <section class="view" id="view-ai">
+            <div class="dash-grid cols-2">
+              <div class="panel">
+                <div class="panel-header"><span class="panel-title">🤖 AI Detection Engine</span></div>
+                <div class="panel-body">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+                    <div>
+                      <div style="font-size:15px;font-weight:600;margin-bottom:4px">AI Monitoring Status</div>
+                      <div style="font-size:12px;color:var(--text-muted)">Automatic disruption detection from satellite &amp; sensor feeds</div>
+                    </div>
+                    <div class="toggle on" id="ai-toggle"><div class="toggle-knob"></div></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Detection Sensitivity</label>
+                    <select class="select-input" id="ai-sensitivity">
+                      <option value="low">Low — Fewer false positives</option>
+                      <option value="medium" selected>Medium — Balanced</option>
+                      <option value="high">High — Maximum detection</option>
+                    </select>
+                  </div>
+                  <div style="margin-top:16px;padding:12px;border-radius:10px;background:var(--bg-elevated);border:1px solid var(--border)">
+                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">Last AI Detection</div>
+                    <div style="font-size:13px;font-weight:600">DIS-007 · Road Blockage · Tezpur-Bhalukpong</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Detected 2 hours ago · Confidence: 87%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header"><span class="panel-title">📡 AI Detection Log</span></div>
+                <div class="panel-body no-pad">
+                  <div class="log-list" id="ai-log-list"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="/js/admin.js"></script>
+  </body>
+</html>

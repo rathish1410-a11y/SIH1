@@ -1,0 +1,68 @@
+[
+  {
+    "id": "R-001",
+    "name": "Dispur → Guwahati Medical College",
+    "state": "Assam",
+    "path": [[26.18, 91.79], [26.19, 91.76], [26.20, 91.73], [26.15, 91.72], [26.12, 91.70]],
+    "alternatePath": [[26.18, 91.79], [26.17, 91.83], [26.14, 91.85], [26.12, 91.82], [26.12, 91.70]],
+    "status": "affected",
+    "distance": "32 km",
+    "normalEta": "1h 10m",
+    "reroutedEta": "1h 40m"
+  },
+  {
+    "id": "R-002",
+    "name": "Shillong → Cherrapunji",
+    "state": "Meghalaya",
+    "path": [[25.60, 91.90], [25.58, 91.89], [25.55, 91.87], [25.52, 91.86], [25.50, 91.85]],
+    "alternatePath": [[25.60, 91.90], [25.57, 91.93], [25.53, 91.91], [25.51, 91.88], [25.50, 91.85]],
+    "status": "blocked",
+    "distance": "54 km",
+    "normalEta": "2h 00m",
+    "reroutedEta": "3h 20m"
+  },
+  {
+    "id": "R-003",
+    "name": "Tezpur → Bhalukpong",
+    "state": "Assam / Arunachal Border",
+    "path": [[26.62, 92.80], [26.60, 92.50], [26.59, 92.20], [26.58, 92.00], [26.57, 91.90]],
+    "alternatePath": [[26.62, 92.80], [26.65, 92.60], [26.68, 92.30], [26.66, 92.05], [26.57, 91.90]],
+    "status": "blocked",
+    "distance": "68 km",
+    "normalEta": "2h 15m",
+    "reroutedEta": "3h 05m"
+  },
+  {
+    "id": "R-004",
+    "name": "Itanagar → Naharlagun Link",
+    "state": "Arunachal Pradesh",
+    "path": [[27.12, 93.62], [27.11, 93.60], [27.10, 93.59], [27.08, 93.58], [27.07, 93.57]],
+    "alternatePath": [[27.12, 93.62], [27.13, 93.64], [27.10, 93.65], [27.08, 93.62], [27.07, 93.57]],
+    "status": "partial",
+    "distance": "12 km",
+    "normalEta": "25m",
+    "reroutedEta": "35m"
+  },
+  {
+    "id": "R-005",
+    "name": "Imphal → Jiribam",
+    "state": "Manipur",
+    "path": [[24.83, 93.94], [24.82, 93.90], [24.81, 93.85], [24.80, 93.80], [24.79, 93.75]],
+    "alternatePath": [[24.83, 93.94], [24.85, 93.90], [24.83, 93.82], [24.81, 93.78], [24.79, 93.75]],
+    "status": "affected",
+    "distance": "108 km",
+    "normalEta": "3h 30m",
+    "reroutedEta": "4h 50m"
+  },
+  {
+    "id": "R-006",
+    "name": "Agartala → Udaipur",
+    "state": "Tripura",
+    "path": [[23.73, 91.27], [23.74, 91.26], [23.75, 91.25], [23.76, 91.24], [23.77, 91.23]],
+    "alternatePath": [[23.73, 91.27], [23.72, 91.25], [23.74, 91.24], [23.76, 91.24], [23.77, 91.23]],
+    "status": "clear",
+    "distance": "22 km",
+    "normalEta": "40m",
+    "reroutedEta": "55m"
+  }
+]

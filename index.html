@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NER Logistics Intelligence Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/login.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <link rel="stylesheet" href="/css/map.css" />
+  </head>
+  <body>
+    <div class="login-page">
+      <div class="login-bg">
+        <div class="login-grid"></div>
+        <div id="login-map" class="login-map-bg"></div>
+      </div>
+
+      <div class="login-container">
+        <div class="login-card">
+          <div class="login-header">
+            <div class="login-logo">🛰</div>
+            <h1 class="login-title">NER Logistics Intelligence</h1>
+            <p class="login-subtitle">Smart Logistics &amp; Accessibility Intelligence Platform</p>
+            <div class="login-badge">
+              <span>●</span> SIH #26002 · MDoNER
+            </div>
+          </div>
+
+          <div class="section-label">Select Your Role</div>
+          <div class="role-grid" id="role-grid">
+            <div class="role-card" data-role="admin" style="--role-color: var(--accent-red)">
+              <div class="role-icon">🛡</div>
+              <div class="role-name">Admin</div>
+              <div class="role-desc">Full system control</div>
+            </div>
+            <div class="role-card" data-role="police" style="--role-color: var(--accent-blue)">
+              <div class="role-icon">🚔</div>
+              <div class="role-name">Police Control</div>
+              <div class="role-desc">Command &amp; dispatch</div>
+            </div>
+            <div class="role-card" data-role="driver" style="--role-color: var(--accent-green)">
+              <div class="role-icon">🚛</div>
+              <div class="role-name">Driver</div>
+              <div class="role-desc">Route &amp; delivery</div>
+            </div>
+            <div class="role-card" data-role="patrol" style="--role-color: var(--accent-amber)">
+              <div class="role-icon">👷</div>
+              <div class="role-name">Patrol Officer</div>
+              <div class="role-desc">Field reporting</div>
+            </div>
+          </div>
+
+          <form class="login-form" id="login-form" onsubmit="return false">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="login-email" placeholder="officer@ner.gov.in" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="login-password" placeholder="••••••••" />
+              </div>
+            </div>
+            <div class="login-actions">
+              <button type="button" class="btn btn-secondary" id="demo-btn">Demo Mode</button>
+              <button type="submit" class="btn btn-primary" id="login-btn">
+                <span>Login</span>
+                <span>→</span>
+              </button>
+            </div>
+          </form>
+
+          <div class="login-demo-info">
+            <strong>Demo Mode:</strong> Click any role card, then press "Demo Mode" to skip credentials and explore.
+          </div>
+
+          <div class="login-footer">
+            Government of India · Ministry of Development of North Eastern Region
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="/js/login.js"></script>
+  </body>
+</html>

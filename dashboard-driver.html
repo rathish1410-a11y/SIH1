@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Driver Portal · NER Logistics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <link rel="stylesheet" href="/css/map.css" />
+    <link rel="stylesheet" href="/css/driver.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo" style="background: var(--accent-green); color: white;">🚛</div>
+          <div>
+            <div class="sidebar-title">Driver Portal</div>
+            <div class="sidebar-subtitle">NER Logistics Intelligence</div>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <div class="nav-section-label">Navigation</div>
+            <button class="nav-item active" data-view="view-route" data-title="My Route" data-subtitle="Assigned route &amp; live conditions">
+              <span class="nav-icon">🗺</span> My Route
+            </button>
+            <button class="nav-item" data-view="view-alerts" data-title="Alert Inbox" data-subtitle="Messages from police &amp; admin">
+              <span class="nav-icon">🔔</span> Alerts
+              <span class="nav-badge" id="driver-alert-badge">0</span>
+            </button>
+            <button class="nav-item" data-view="view-report" data-title="Report Hazard" data-subtitle="Report a road hazard">
+              <span class="nav-icon">⚠</span> Report Hazard
+            </button>
+            <button class="nav-item" data-view="view-profile" data-title="My Profile" data-subtitle="Driver &amp; vehicle info">
+              <span class="nav-icon">👤</span> Profile
+            </button>
+          </div>
+        </nav>
+        <div class="sidebar-footer">
+          <button class="nav-item" id="logout-btn">
+            <span class="nav-icon">⏻</span> Logout
+          </button>
+        </div>
+      </aside>
+      <div class="mobile-overlay" id="mobile-overlay"></div>
+
+      <div class="main-area">
+        <header class="topbar">
+          <button class="icon-btn" id="menu-toggle" style="display:none">☰</button>
+          <div>
+            <div class="topbar-title" id="topbar-title">My Route</div>
+            <div class="topbar-subtitle" id="topbar-subtitle">Assigned route &amp; live conditions</div>
+          </div>
+          <div class="topbar-spacer"></div>
+          <div class="topbar-actions">
+            <button class="icon-btn" id="theme-toggle">☾</button>
+            <div class="user-chip">
+              <div class="user-avatar" style="background: var(--accent-green)">B</div>
+              <div>
+                <div class="user-name" id="user-name">Driver</div>
+                <div class="user-role" id="user-vehicle">VHC-001</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="content">
+          <!-- My Route -->
+          <section class="view active" id="view-route">
+            <div class="route-status-banner" id="route-status-banner">CLEAR</div>
+            <div class="dash-grid cols-2">
+              <div class="panel">
+                <div class="panel-header">
+                  <span class="panel-title">🗺 My Route Map</span>
+                  <span class="badge badge-info" id="route-eta">ETA: --</span>
+                </div>
+                <div class="panel-body no-pad">
+                  <div class="map-container" style="height:400px" id="driver-map"></div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div class="panel">
+                  <div class="panel-header"><span class="panel-title">📦 Cargo Info</span></div>
+                  <div class="panel-body">
+                    <div class="cargo-info" id="driver-cargo-info"></div>
+                  </div>
+                </div>
+                <div class="panel">
+                  <div class="panel-header"><span class="panel-title">⚠ Hazards on Route</span></div>
+                  <div class="panel-body flush" id="driver-route-hazards"></div>
+                </div>
+                <button class="sos-btn" id="sos-btn">🆘 SOS Emergency</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Alerts -->
+          <section class="view" id="view-alerts">
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">🔔 Alert Inbox</span>
+                <span class="badge badge-neutral" id="driver-alert-count">0 alerts</span>
+              </div>
+              <div class="panel-body flush" id="driver-alert-inbox"></div>
+            </div>
+          </section>
+
+          <!-- Report Hazard -->
+          <section class="view" id="view-report">
+            <div class="panel" style="max-width:600px;margin:0 auto">
+              <div class="panel-header"><span class="panel-title">⚠ Report a Hazard</span></div>
+              <div class="panel-body">
+                <div class="report-form">
+                  <div class="form-group">
+                    <label class="form-label">Hazard Type</label>
+                    <div class="radio-group">
+                      <div class="radio-chip selected" data-hazard="Flood">🌊 Flood</div>
+                      <div class="radio-chip" data-hazard="Landslide">⛰ Landslide</div>
+                      <div class="radio-chip" data-hazard="Road Blockage">🚧 Blockage</div>
+                      <div class="radio-chip" data-hazard="Other">⚠ Other</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Description (optional)</label>
+                    <textarea class="form-input" id="hazard-desc" placeholder="Describe what you see..."></textarea>
+                  </div>
+                  <div style="padding:12px;border-radius:10px;background:var(--bg-elevated);border:1px solid var(--border);font-size:12px;color:var(--text-muted)">
+                    📍 Your current location will be automatically sent to Police Control and nearby Patrol Officers.
+                  </div>
+                  <button class="btn btn-primary" id="submit-hazard-btn" style="background:var(--accent-green)">📡 Send Hazard Report</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Profile -->
+          <section class="view" id="view-profile">
+            <div class="panel" style="max-width:600px;margin:0 auto">
+              <div class="panel-header"><span class="panel-title">👤 Driver Profile</span></div>
+              <div class="panel-body">
+                <div class="driver-profile-card" style="margin-bottom:20px">
+                  <div class="driver-profile-avatar" id="profile-avatar">B</div>
+                  <div class="driver-profile-info">
+                    <h4 id="profile-name">Bhobora Gogoi</h4>
+                    <span id="profile-id">DRV-001 · VHC-001</span>
+                  </div>
+                </div>
+                <div class="cargo-info" id="profile-cargo-info"></div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="/js/driver-dashboard.js"></script>
+  </body>
+</html>

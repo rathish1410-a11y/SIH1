@@ -1,0 +1,47 @@
+@media (max-width: 768px) {
+  .dash-grid.cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .content {
+    padding: var(--space-1);
+  }
+
+  .route-status-banner {
+    font-size: 14px;
+    padding: 14px;
+  }
+
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .user-chip {
+    padding: 4px 8px 4px 4px;
+  }
+
+  .user-name {
+    font-size: 12px;
+  }
+
+  .user-role {
+    display: none;
+  }
+
+  .sos-btn {
+    font-size: 16px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar-title {
+    font-size: 15px;
+  }
+  .topbar-subtitle {
+    display: none;
+  }
+  #menu-toggle {
+    display: flex !important;
+  }
+}

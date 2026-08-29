@@ -1,0 +1,52 @@
+[
+  {
+    "id": "PTR-001",
+    "name": "Khniam Phira",
+    "zone": "East Khasi Hills, Meghalaya",
+    "lat": 25.57,
+    "lng": 91.89,
+    "status": "on-duty",
+    "assignedIncidents": ["DIS-002", "DIS-006"],
+    "phone": "+91-98XXX-XX201"
+  },
+  {
+    "id": "PTR-002",
+    "name": "Tapi Raam",
+    "zone": "Papum Pare, Arunachal Pradesh",
+    "lat": 27.33,
+    "lng": 94.58,
+    "status": "on-duty",
+    "assignedIncidents": ["DIS-003"],
+    "phone": "+91-98XXX-XX202"
+  },
+  {
+    "id": "PTR-003",
+    "name": "Hemanta Borah",
+    "zone": "Kamrup, Assam",
+    "lat": 26.14,
+    "lng": 91.73,
+    "status": "en-route",
+    "assignedIncidents": ["DIS-001"],
+    "phone": "+91-98XXX-XX203"
+  },
+  {
+    "id": "PTR-004",
+    "name": "Thoudam Keren",
+    "zone": "Imphal West, Manipur",
+    "lat": 24.82,
+    "lng": 93.93,
+    "status": "on-duty",
+    "assignedIncidents": ["DIS-004"],
+    "phone": "+91-98XXX-XX204"
+  },
+  {
+    "id": "PTR-005",
+    "name": "Pranab Reang",
+    "zone": "Gomati, Tripura",
+    "lat": 23.72,
+    "lng": 91.25,
+    "status": "off-duty",
+    "assignedIncidents": ["DIS-005"],
+    "phone": "+91-98XXX-XX205"
+  }
+]
